@@ -327,9 +327,7 @@ class BridgeTowerModelTest(ModelTesterMixin, PipelineTesterMixin, unittest.TestC
     def test_disk_offload(self):
         pass
 
-    @unittest.skip(reason="Does not work on the tiny model as we keep hitting edge cases.")
-    def test_model_parallelism(self):
-        pass
+
 
     # function to extract meaningful tensor from output per different model_class
     def extract_output(self, outputs, model_class):
