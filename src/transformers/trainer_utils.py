@@ -629,16 +629,21 @@ def find_executable_batch_size(
     function: callable = None, starting_batch_size: int = 128, auto_find_batch_size: bool = False
 ):
     """
-    Args:
     A basic decorator that will try to execute `function`. If it fails from exceptions related to out-of-memory or
-    CUDNN, the batch size is cut in half and passed to `function` `function` must take in a `batch_size` parameter as
+    CUDNN, the batch size is cut in half and passed to `function`. `function` must take in a `batch_size` parameter as
     its first argument.
-        function (`callable`, *optional*)
-            A function to wrap
-        starting_batch_size (`int`, *optional*)
-            The batch size to try and fit into memory
-        auto_find_batch_size (`bool`, *optional*)
-            If False, will just execute `function`
+
+    Args:
+        function (`callable`, *optional*):
+            A function to wrap.
+        starting_batch_size (`int`, *optional*):
+            The batch size to try and fit into memory.
+        auto_find_batch_size (`bool`, *optional*):
+            If True, will try to find the maximum executable batch size by iteratively doubling the batch size.
+            If False, will just execute `function` with the starting batch size.
+
+    Returns:
+        The wrapped function that takes a `batch_size` parameter.
     """
     if function is None:
         return functools.partial(
@@ -648,12 +653,28 @@ def find_executable_batch_size(
         )
 
     if auto_find_batch_size:
-        requires_backends(find_executable_batch_size, "accelerate")
-        from accelerate.utils import find_executable_batch_size as accelerate_find_executable_batch_size
-
-        return accelerate_find_executable_batch_size(function=function, starting_batch_size=starting_batch_size)
+        batch_size = starting_batch_size
+        max_batch_size = None
+        while True:
+            try:
+                function(batch_size)
+                if max_batch_size is None:
+                    max_batch_size = batch_size
+                else:
+                    max_batch_size = max(max_batch_size, batch_size)
+                batch_size *= 2
+            except (RuntimeError, AssertionError) as e:
+                if "CUDA out of memory" in str(e) or "CUDNN_STATUS_NOT_SUPPORTED" in str(e):
+                    batch_size = batch_size // 2
+                    break
+                else:
+                    raise e
+        if max_batch_size is None:
+            raise RuntimeError("Could not find an executable batch size.")
+        return functools.partial(function, batch_size=max_batch_size)
 
     return functools.partial(function, batch_size=starting_batch_size)
+
 
 
 class FSDPOption(ExplicitEnum):
