@@ -18,7 +18,7 @@ import warnings
 from collections import OrderedDict
 
 from ...utils import logging
-from .auto_factory import _BaseAutoModelClass, _LazyAutoMapping, auto_class_update
+from .auto_factory import _BaseAutoBackboneClass, _BaseAutoModelClass, _LazyAutoMapping, auto_class_update
 from .configuration_auto import CONFIG_MAPPING_NAMES
 
 
@@ -32,6 +32,7 @@ MODEL_MAPPING_NAMES = OrderedDict(
         ("align", "AlignModel"),
         ("altclip", "AltCLIPModel"),
         ("audio-spectrogram-transformer", "ASTModel"),
+        ("autoformer", "AutoformerModel"),
         ("bart", "BartModel"),
         ("beit", "BeitModel"),
         ("bert", "BertModel"),
@@ -78,6 +79,7 @@ MODEL_MAPPING_NAMES = OrderedDict(
         ("efficientformer", "EfficientFormerModel"),
         ("efficientnet", "EfficientNetModel"),
         ("electra", "ElectraModel"),
+        ("encodec", "EncodecModel"),
         ("ernie", "ErnieModel"),
         ("ernie_m", "ErnieMModel"),
         ("esm", "EsmModel"),
@@ -130,6 +132,7 @@ MODEL_MAPPING_NAMES = OrderedDict(
         ("mobilenet_v1", "MobileNetV1Model"),
         ("mobilenet_v2", "MobileNetV2Model"),
         ("mobilevit", "MobileViTModel"),
+        ("mobilevitv2", "MobileViTV2Model"),
         ("mpnet", "MPNetModel"),
         ("mt5", "MT5Model"),
         ("mvp", "MvpModel"),
@@ -158,6 +161,7 @@ MODEL_MAPPING_NAMES = OrderedDict(
         ("roberta-prelayernorm", "RobertaPreLayerNormModel"),
         ("roc_bert", "RoCBertModel"),
         ("roformer", "RoFormerModel"),
+        ("rwkv", "RwkvModel"),
         ("sam", "SamModel"),
         ("segformer", "SegformerModel"),
         ("sew", "SEWModel"),
@@ -166,6 +170,7 @@ MODEL_MAPPING_NAMES = OrderedDict(
         ("speecht5", "SpeechT5Model"),
         ("splinter", "SplinterModel"),
         ("squeezebert", "SqueezeBertModel"),
+        ("swiftformer", "SwiftFormerModel"),
         ("swin", "SwinModel"),
         ("swin2sr", "Swin2SRModel"),
         ("swinv2", "Swinv2Model"),
@@ -175,6 +180,7 @@ MODEL_MAPPING_NAMES = OrderedDict(
         ("tapas", "TapasModel"),
         ("time_series_transformer", "TimeSeriesTransformerModel"),
         ("timesformer", "TimesformerModel"),
+        ("timm_backbone", "TimmBackbone"),
         ("trajectory_transformer", "TrajectoryTransformerModel"),
         ("transfo-xl", "TransfoXLModel"),
         ("tvlt", "TvltModel"),
@@ -248,6 +254,7 @@ MODEL_FOR_PRETRAINING_MAPPING_NAMES = OrderedDict(
         ("roberta", "RobertaForMaskedLM"),
         ("roberta-prelayernorm", "RobertaPreLayerNormForMaskedLM"),
         ("roc_bert", "RoCBertForPreTraining"),
+        ("rwkv", "RwkvForCausalLM"),
         ("splinter", "SplinterForPreTraining"),
         ("squeezebert", "SqueezeBertForMaskedLM"),
         ("switch_transformers", "SwitchTransformersForConditionalGeneration"),
@@ -332,6 +339,7 @@ MODEL_WITH_LM_HEAD_MAPPING_NAMES = OrderedDict(
         ("roberta-prelayernorm", "RobertaPreLayerNormForMaskedLM"),
         ("roc_bert", "RoCBertForMaskedLM"),
         ("roformer", "RoFormerForMaskedLM"),
+        ("rwkv", "RwkvForCausalLM"),
         ("speech_to_text", "Speech2TextForConditionalGeneration"),
         ("squeezebert", "SqueezeBertForMaskedLM"),
         ("switch_transformers", "SwitchTransformersForConditionalGeneration"),
@@ -395,6 +403,7 @@ MODEL_FOR_CAUSAL_LM_MAPPING_NAMES = OrderedDict(
         ("roberta-prelayernorm", "RobertaPreLayerNormForCausalLM"),
         ("roc_bert", "RoCBertForCausalLM"),
         ("roformer", "RoFormerForCausalLM"),
+        ("rwkv", "RwkvForCausalLM"),
         ("speech_to_text_2", "Speech2Text2ForCausalLM"),
         ("transfo-xl", "TransfoXLLMHeadModel"),
         ("trocr", "TrOCRForCausalLM"),
@@ -451,6 +460,7 @@ MODEL_FOR_IMAGE_CLASSIFICATION_MAPPING_NAMES = OrderedDict(
         ("mobilenet_v1", "MobileNetV1ForImageClassification"),
         ("mobilenet_v2", "MobileNetV2ForImageClassification"),
         ("mobilevit", "MobileViTForImageClassification"),
+        ("mobilevitv2", "MobileViTV2ForImageClassification"),
         ("nat", "NatForImageClassification"),
         (
             "perceiver",
@@ -464,6 +474,7 @@ MODEL_FOR_IMAGE_CLASSIFICATION_MAPPING_NAMES = OrderedDict(
         ("regnet", "RegNetForImageClassification"),
         ("resnet", "ResNetForImageClassification"),
         ("segformer", "SegformerForImageClassification"),
+        ("swiftformer", "SwiftFormerForImageClassification"),
         ("swin", "SwinForImageClassification"),
         ("swinv2", "Swinv2ForImageClassification"),
         ("van", "VanForImageClassification"),
@@ -489,6 +500,7 @@ MODEL_FOR_SEMANTIC_SEGMENTATION_MAPPING_NAMES = OrderedDict(
         ("dpt", "DPTForSemanticSegmentation"),
         ("mobilenet_v2", "MobileNetV2ForSemanticSegmentation"),
         ("mobilevit", "MobileViTForSemanticSegmentation"),
+        ("mobilevitv2", "MobileViTV2ForSemanticSegmentation"),
         ("segformer", "SegformerForSemanticSegmentation"),
         ("upernet", "UperNetForSemanticSegmentation"),
     ]
@@ -523,6 +535,8 @@ MODEL_FOR_VISION_2_SEQ_MAPPING_NAMES = OrderedDict(
     [
         ("blip", "BlipForConditionalGeneration"),
         ("blip-2", "Blip2ForConditionalGeneration"),
+        ("git", "GitForCausalLM"),
+        ("pix2struct", "Pix2StructForConditionalGeneration"),
         ("vision-encoder-decoder", "VisionEncoderDecoderModel"),
     ]
 )
@@ -736,6 +750,8 @@ MODEL_FOR_QUESTION_ANSWERING_MAPPING_NAMES = OrderedDict(
         ("fnet", "FNetForQuestionAnswering"),
         ("funnel", "FunnelForQuestionAnswering"),
         ("gpt2", "GPT2ForQuestionAnswering"),
+        ("gpt_neo", "GPTNeoForQuestionAnswering"),
+        ("gpt_neox", "GPTNeoXForQuestionAnswering"),
         ("gptj", "GPTJForQuestionAnswering"),
         ("ibert", "IBertForQuestionAnswering"),
         ("layoutlmv2", "LayoutLMv2ForQuestionAnswering"),
@@ -980,10 +996,12 @@ MODEL_FOR_BACKBONE_MAPPING_NAMES = OrderedDict(
         ("convnext", "ConvNextBackbone"),
         ("convnextv2", "ConvNextV2Backbone"),
         ("dinat", "DinatBackbone"),
+        ("focalnet", "FocalNetBackbone"),
         ("maskformer-swin", "MaskFormerSwinBackbone"),
         ("nat", "NatBackbone"),
         ("resnet", "ResNetBackbone"),
         ("swin", "SwinBackbone"),
+        ("timm_backbone", "TimmBackbone"),
     ]
 )
 
@@ -1315,7 +1333,7 @@ class AutoModelForAudioXVector(_BaseAutoModelClass):
     _model_mapping = MODEL_FOR_AUDIO_XVECTOR_MAPPING
 
 
-class AutoBackbone(_BaseAutoModelClass):
+class AutoBackbone(_BaseAutoBackboneClass):
     _model_mapping = MODEL_FOR_BACKBONE_MAPPING
 
 

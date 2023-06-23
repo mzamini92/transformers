@@ -216,6 +216,9 @@ class TFAlbertPreTrainedModel(metaclass=DummyObject):
         requires_backends(self, ["tf"])
 
 
+TF_MODEL_FOR_AUDIO_CLASSIFICATION_MAPPING = None
+
+
 TF_MODEL_FOR_CAUSAL_LM_MAPPING = None
 
 
@@ -223,6 +226,9 @@ TF_MODEL_FOR_DOCUMENT_QUESTION_ANSWERING_MAPPING = None
 
 
 TF_MODEL_FOR_IMAGE_CLASSIFICATION_MAPPING = None
+
+
+TF_MODEL_FOR_MASK_GENERATION_MAPPING = None
 
 
 TF_MODEL_FOR_MASKED_IMAGE_MODELING_MAPPING = None
@@ -1093,6 +1099,37 @@ class TFDPRQuestionEncoder(metaclass=DummyObject):
 
 
 class TFDPRReader(metaclass=DummyObject):
+    _backends = ["tf"]
+
+    def __init__(self, *args, **kwargs):
+        requires_backends(self, ["tf"])
+
+
+TF_EFFICIENTFORMER_PRETRAINED_MODEL_ARCHIVE_LIST = None
+
+
+class TFEfficientFormerForImageClassification(metaclass=DummyObject):
+    _backends = ["tf"]
+
+    def __init__(self, *args, **kwargs):
+        requires_backends(self, ["tf"])
+
+
+class TFEfficientFormerForImageClassificationWithTeacher(metaclass=DummyObject):
+    _backends = ["tf"]
+
+    def __init__(self, *args, **kwargs):
+        requires_backends(self, ["tf"])
+
+
+class TFEfficientFormerModel(metaclass=DummyObject):
+    _backends = ["tf"]
+
+    def __init__(self, *args, **kwargs):
+        requires_backends(self, ["tf"])
+
+
+class TFEfficientFormerPreTrainedModel(metaclass=DummyObject):
     _backends = ["tf"]
 
     def __init__(self, *args, **kwargs):
@@ -2311,6 +2348,23 @@ class TFRoFormerModel(metaclass=DummyObject):
 
 
 class TFRoFormerPreTrainedModel(metaclass=DummyObject):
+    _backends = ["tf"]
+
+    def __init__(self, *args, **kwargs):
+        requires_backends(self, ["tf"])
+
+
+TF_SAM_PRETRAINED_MODEL_ARCHIVE_LIST = None
+
+
+class TFSamModel(metaclass=DummyObject):
+    _backends = ["tf"]
+
+    def __init__(self, *args, **kwargs):
+        requires_backends(self, ["tf"])
+
+
+class TFSamPreTrainedModel(metaclass=DummyObject):
     _backends = ["tf"]
 
     def __init__(self, *args, **kwargs):

@@ -746,7 +746,7 @@ class TFGenerationMixin:
                         "You have modified the pretrained model configuration to control generation. This is a"
                         " deprecated strategy to control generation and will be removed soon, in a future version."
                         " Please use a generation configuration file (see"
-                        " https://huggingface.co/docs/transformers/main_classes/text_generation)"
+                        " https://huggingface.co/docs/transformers/main_classes/text_generation )"
                     )
                     self.generation_config = new_generation_config
             generation_config = self.generation_config
@@ -858,7 +858,6 @@ class TFGenerationMixin:
                 UserWarning,
             )
         elif generation_config.max_new_tokens is not None:
-            generation_config.max_length = generation_config.max_new_tokens + input_ids_seq_length
             if not has_default_max_length:
                 logger.warning(
                     f"Both `max_new_tokens` (={generation_config.max_new_tokens}) and `max_length`(="
@@ -866,6 +865,7 @@ class TFGenerationMixin:
                     "Please refer to the documentation for more information. "
                     "(https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)"
                 )
+            generation_config.max_length = generation_config.max_new_tokens + input_ids_seq_length
 
         # If the input length is a tensor (i.e. dynamic length), skip length checks
         if not isinstance(input_ids_seq_length, tf.Tensor):
